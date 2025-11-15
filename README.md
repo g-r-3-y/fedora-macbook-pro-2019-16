@@ -725,7 +725,7 @@ Use this for general tasks to minimize heat and noise.
 sudo gpu-switcher.sh amd-dpm-low
 ```
 
-##### 3.4.2. Set DPM to High Performance
+#### 3.4.2. Set DPM to High Performance
 
 Use this for demanding applications to maximize rendering speed.
 
