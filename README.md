@@ -169,14 +169,14 @@ You must remove or mask the conflicting power management tool, which is **`tuned
 
 #### 2.2.2. TLP Installation
 
-    ```bash
-    # Install TLP
-    sudo dnf install tlp tlp-rdw    
+```bash
+# Install TLP
+sudo dnf install tlp tlp-rdw     
 
-    # Enable and start the TLP service
-    sudo systemctl enable tlp
-    sudo systemctl start tlp
-    ```
+# Enable and start the TLP service
+sudo systemctl enable tlp
+sudo systemctl start tlp
+```
 
 #### 2.2.3. TLP Configuration `/etc/tlp.conf`
 
@@ -222,10 +222,10 @@ The changes are applied immediately by kernel 'intel_pstate' driver.
 
 Displays CPU temperature and fan speeds:
 
-    ```bash
-    # Thermal info
-    sudo tlp-stat -t 
-    ```
+```bash
+# Thermal info
+sudo tlp-stat -t 
+```
 
 ### 2.3. Controlling `Intel Turbo Boost`
 
@@ -359,11 +359,18 @@ We will use a dedicated **GPU Switcher Script** (from https://github.com/basecam
 
 ---
 
-### 3.1. Installing the GPU Switcher Script
+### 3.1. Installing `dracut`
+    
+```bash
+# Install dracut tool for generating an initramfs/initrd image
+sudo dnf install dracut
+```
+
+### 3.2. Installing the GPU Switcher Script
 
 Save the provided script content (named `gpu-switcher.sh`) into an executable file, typically in `/usr/local/bin/` or `~/bin`.
 
-#### 3.1.1. Create and Install the Script
+#### 3.2.1. Create and Install the Script
 
 1.  **Create the script file:**
 
@@ -390,7 +397,7 @@ Save the provided script content (named `gpu-switcher.sh`) into an executable fi
     BLACKLIST_CONF="/etc/modprobe.d/gpu-blacklist.conf"
     GRUB_CONFIG="/etc/default/grub"
     AMDGPU_DPM_RULES="/etc/udev/rules.d/30-amdgpu-pm.rules"
-    BACKUP_DIR="~/.gpu-switcher-backup"
+    BACKUP_DIR="$HOME/.gpu-switcher-backup"
 
     # Colors for output
     RED='\033[0;31m'
@@ -678,25 +685,25 @@ Save the provided script content (named `gpu-switcher.sh`) into an executable fi
 
     main "\$@"
 
-        ```
+    ```
 
-    3.  **Make the script executable:**
+3. **Make the script executable:**
 
-        ```bash
-        sudo chmod +x gpu-switcher.sh
-        ```
+   ```bash
+   sudo chmod +x gpu-switcher.sh
+   ```
 
-#### 3.1.2. Run in Hybrid Mode (Default Recommendation)
+#### 3.2.2. Run in Hybrid Mode (Default Recommendation)
 
 This command applies the necessary configuration to make both GPUs available but forces the AMD card to its lowest performance level for better battery life and thermal management.
 
-    ```bash
-    sudo gpu-switcher.sh hybrid amd-dpm-low
-    ```
+```bash
+sudo gpu-switcher.sh hybrid amd-dpm-low
+```
 
 Note: This script automatically creates a backup of your system files, applies GPU configuration changes, updates GRUB, and regenerates the initramfs. A reboot is required for kernel-level changes to take full effect.
 
-### 3.2. Switching GPU Modes
+### 3.3. Switching GPU Modes
 
 The script provides commands to quickly switch between the three primary graphics configurations.
 
@@ -706,39 +713,40 @@ The script provides commands to quickly switch between the three primary graphic
 * AMD Only	    sudo gpu-switcher.sh amd-only	Maximum Performance/External Display.	Blacklists the Intel driver; high power usage.
 
 
-### 3.3. Managing AMD Dynamic Power Management (DPM)
+### 3.4. Managing AMD Dynamic Power Management (DPM)
 
 In Hybrid or AMD Only mode, you can change the dGPU's DPM level instantly without rebooting. This setting controls the power profile of the AMD card (e.g., for gaming or rendering vs. idle).
 
-#### 3.3.1. Set DPM to Low Power
+#### 3.4.1. Set DPM to Low Power
 
 Use this for general tasks to minimize heat and noise.
 
-    ```bash
-    sudo gpu-switcher.sh amd-dpm-low
-    ```
+```bash
+sudo gpu-switcher.sh amd-dpm-low
+```
 
-##### 3.3.2. Set DPM to High Performance
+##### 3.4.2. Set DPM to High Performance
 
 Use this for demanding applications to maximize rendering speed.
 
-    ```bash
-    sudo gpu-switcher.sh amd-dpm-high
-    ```
-    
-### 3.4. Verification and Status
+```bash
+sudo gpu-switcher.sh amd-dpm-high
+ ```
+   
+### 3.5. Verification and Status
 
 Verify the current active configuration using the script's status command.
 
-#### 3.4.1. Show Current Status
+#### 3.5.1. Show Current Status
 
-    ```bash
-    sudo gpu-switcher.sh status
-    ```
-#### 3.4.2. Restore Configuration
+```bash
+sudo gpu-switcher.sh status
+```
 
-If issues arise, you can revert the system files to the state they were in before the script was first run. This typically requires a reboot afterward.
+#### 3.5.2. Restore Configuration
 
-    ```bash
-    sudo gpu-switcher.sh restore
-    ```
+You can revert the system files to the state they were in before the script was first run. This typically requires a reboot afterward.
+
+```bash
+sudo gpu-switcher.sh restore
+```
