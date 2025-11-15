@@ -695,7 +695,7 @@ Save the provided script content (named `gpu-switcher.sh`) into an executable fi
 
 #### 3.2.2. Run in Hybrid Mode (Default Recommendation)
 
-This command applies the necessary configuration to make both GPUs available but forces the AMD card to its lowest performance level for better battery life and thermal management.
+This command applies the necessary configuration to make both GPUs available, but forces the AMD dGPU to its lowest performance level for better battery life and thermal management. Intel iGPU is used by Wayland apps by default (GNOME, web browsers, etc). Video playback is accelerated by AMD dGPU, if correct ffmpeg codecs are installed (by vlc, mpv, etc).
 
 ```bash
 sudo gpu-switcher.sh hybrid amd-dpm-low
