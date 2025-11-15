@@ -10,13 +10,13 @@ This guide provides instructions and configuration snippets for optimizing Fedor
 
 ## Hardware Specs
 
-*   **Model:**       MacBook Pro 2019 16 (MacBookPro16,1)
-*   **Processor:**   Intel Core i9-9880H
-*   **RAM:**         16GB 2667MHz DDR4
-*   **Storage:**     1TB NVMe SSD
-*   **Graphics:**    Intel® UHD Graphics 630 (CFL GT2)
-*   **Graphics 1:**  AMD Radeon Pro 5500M 4GB
-*   **Display:**     16-inch Retina Display (3072 x 1920)
+*   **Model:**        MacBook Pro 2019 16 (MacBookPro16,1)
+*   **Processor:**    Intel Core i9-9880H
+*   **RAM:**          16GB 2667MHz DDR4
+*   **Storage:**      1TB NVMe SSD
+*   **Graphics:**     Intel® UHD Graphics 630 (CFL GT2)
+*   **Graphics 1:**   AMD Radeon Pro 5500M 4GB
+*   **Display:**      16-inch Retina Display (3072 x 1920)
 
 ## Software Specs
 
