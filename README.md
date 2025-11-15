@@ -1,11 +1,11 @@
 # Fedora T2 Linux Tuning Guide for MacBook Pro 2019 16
 
-This guide provides instructions and configuration snippets for optimizing **Fedora Workstation T2 Linux** on a **MacBook Pro 2019 (16-inch model)**. It focuses on improving battery life, performance, and addressing common hardware and software quirks for daily usability.
+This guide provides instructions and configuration snippets for optimizing **T2 Linux Fedora Workstation T2 Linux** on a **MacBook Pro 2019 (16-inch model)**. It focuses on improving battery life, performance, and addressing common hardware and software quirks for daily usability.
 
 | Detail | Specification |
 | :--- | :--- |
 | **Target Fedora Version** | Fedora 43 (Workstation Edition) |
-| **Author** | [Your GitHub Username] |
+| **Author** | [g-r-3-y] |
 | **License** | MIT License |
 
 ---
