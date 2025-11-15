@@ -28,3 +28,18 @@ This guide provides instructions and configuration snippets for optimizing Fedor
 *   **Compositor:**  Wayland
 *   **Kernel:**      Linux 6.16.9-210.t2.fc43.x86_64
 
+## Tuning Steps
+
+*   **Installation quirks:** Sanitizing EFI,  grub.
+*   **Power Management:** Optimizing performance vs power consumption / heat.
+*   **Graphics:** Integrated Intel iGPU and dedicated AMD gGPU configuration.
+*   **Audio:**   Configuring DSP sound card and DSP microphone.
+*   **Network:** Securing DNS with Cloudflare WARP.
+*   **Display:** Configuring DPI and Night Light.
+*   **Password Management:**  KeePass, Google Drive Sync and Web browser integration.
+*   **Crypto Wallets:**  Ledger, Software wallets.
+*   **IOS Synchronization:**  Mail, Calendar, Contacts, Notes, Passwords.
+*   **Messengers:**  WhatsAPP, Telegram, Signal, Discord.
+*   **Video acceleration:**  Codecs, Players.
+*   **Web browsers:**  Firefox flavors, Chromium flavors.
+
