@@ -131,15 +131,24 @@ After successfully installing and booting into your new Fedora system, run these
 
 ## 2. ⚡ Power Management: Optimizing performance vs power consumption / heat
 
-We will use **TLP** and a dedicated fan control daemon.
+As a first step we disable automatic suspend in GNOME. 
 
-### 2.1. Installing TLP and Removing Conflicts
+### 2.1. **GNOME** Power Settings
+
+Using the GNOME desktop `Settings` app:
+1. Open `Settings` app.
+2. Select `Power` from the settings menu.
+3. Toggle the Automatic Suspend switch to `Off`. 
+
+Next we will use **TLP** and a dedicated fan control daemon.
+
+### 2.2. Installing TLP and Removing Conflicts
 
 **TLP** applies system-level power-saving tweaks automatically. Before installation, you must **remove or mask conflicting power management services** to ensure TLP functions correctly.
 
 You must remove or mask the conflicting power management tool, which is **`tuned`** and **`tuned-ppd`** on **Fedora 41 and newer**. You also need to **mask** the **`systemd-rfkill.service`** and **`systemd-rfkill.socket`** services to prevent interference and allow TLP's radio device switching to work properly.
 
-#### 2.1.1. Removal of Conflicting Tools and Masking Services
+#### 2.2.1. Removal of Conflicting Tools and Masking Services
 
 ##### For Fedora 41 and newer
 
@@ -158,7 +167,7 @@ You must remove or mask the conflicting power management tool, which is **`tuned
     sudo systemctl mask systemd-rfkill.socket
     ```
 
-#### 2.1.2. TLP Installation
+#### 2.2.2. TLP Installation
 
 ```bash
 # Install TLP
@@ -169,7 +178,7 @@ sudo systemctl enable tlp
 sudo systemctl start tlp
 ```
 
-#### 2.1.3. TLP Configuration `/etc/tlp.conf`
+#### 2.2.3. TLP Configuration `/etc/tlp.conf`
 
 The following settings balance performance vs power consumption and heat:
 
@@ -193,7 +202,7 @@ sudo tlp start
 
 The changes are applied immediately by kernel 'intel_pstate' driver.
 
-#### 2.2.1. Processor Information `tlp-stat -p`
+#### 2.2.4. Processor Information `tlp-stat -p`
 
 1. **Verify the settings:**
 
@@ -209,7 +218,7 @@ sudo tlp-stat -p
 /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost =   1
 ```
 
-#### 2.2.2. Thermal Information `tlp-stat -t`
+#### 2.2.5. Thermal Information `tlp-stat -t`
 
 Displays CPU temperature and fan speeds:
 
@@ -260,7 +269,7 @@ speed_curve=exponential
 always_full_speed=false
 ```
 
-2. **After edit run:**
+2. **Apply the settings:**
 
 ```bash
 # Apply t2fanrd settings
@@ -304,3 +313,40 @@ max_temp = 86
 sudo systemctl enable mbpfan
 sudo systemctl start mbpfan
 ```
+
+### 2.5 Suspend and Closing of the Lid
+
+#### 2.5.1 Suspend
+
+Suspension currently does not work. After booting `Fedora 42.2 Live iso` the suspend does work and the workstation resumes correctly. However after installation the suspend does not work. Therefore the workstation can be configured to lock the session after closing of the lid.
+
+#### 2.5.2 Session Lock
+
+After closing of the lid the session will be locked.
+
+1. **Edit `/etc/systemd/logind.conf.d/logind.conf`:**
+
+```bash
+#Session Lock settings
+HandleLidSwitch=lock
+HandleLidSwitchExternalPower=lock
+HandleLidSwitchDocked=lock
+```
+
+The power button next to the touchbar can be configured to shutdown the system.
+
+2. **Edit `/etc/systemd/logind.conf.d/logind.conf`:**
+
+```bash
+#Shutdown settings
+HandlePowerKey=poweroff
+```
+
+3. **Restart `systemd-logind`:**
+
+```bash
+# Restart systemd-logind service
+sudo systemctl restart systemd-logind
+```
+
+After opening of the lid, the password can be typed directly without pressing the `ENTER` key to unlock the session.
