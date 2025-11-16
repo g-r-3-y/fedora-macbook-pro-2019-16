@@ -246,9 +246,73 @@ For CPU intensive tasks it can be enabled back.
     echo "0" | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
     ```
 
-### 2.4. Fan Control Options
+### 2.4 Using `tuned` instead of `TLP`
 
-#### 2.4.1 `t2fanrd`
+It is possible to use the original pre-installed power management daemon **tuned** instead of **TLP**. 
+(config by @sharpenedblade at t2 linux fedora discord).
+
+1. **Edit `/etc/tuned/profiles/t2linux-low/tuned.conf`:**
+
+    ```bash
+    [main]
+    summary=t2linux power savings
+
+    [cpu]
+    # CPU_BOOST_ON_AC
+    boost=0
+
+    [video]
+    # RADEON_DPM_STATE_ON_AC
+    radeon_powersave=dpm-balanced, auto
+
+    [sysfs]
+    # RADEON_DPM_PERF_LEVEL_ON_AC
+    /sys/class/drm/card*/device/power_dpm_force_performance_level=low
+    # CPU_HWP_DYN_BOOST_ON_AC
+    /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost=1
+
+    [acpi]
+    # PLATFORM_PROFILE_ON_AC
+    platform_profile=balanced
+
+    [usb]
+    autosuspend=2
+    ```
+
+2. **After edit of the configuration run:**
+
+    ```bash
+    cp -r /usr/lib/tuned/profiles/{balanced,balanced-battery,powersave/ /etc/tuned/profiles/
+    ```
+
+3. **Edit the following profiles:**
+
+   ```bash
+    /etc/tuned/profiles/balanced/tuned.conf
+    /etc/tuned/profiles/balanced-battery/tuned.conf
+    /etc/tuned/profiles/powersave/tuned.conf
+    ```
+4. **Add the following line in each profile:**
+
+   ```bash
+   [main]
+   include=t2linux-low
+   ```
+   
+5. **Apply the settings:**
+
+   ```bash
+   #Restart tuned service
+    sudo systemctl restart tuned
+   ```
+
+This setup lets you enable **Intel Turbo Boost** by changing the power mode to `Performance` in the **GNOME** menu.
+
+The profiles can be selected in `Settings > Power`. Then select `Performance`.
+ 
+### 2.5. Fan Control Options
+
+#### 2.5.1 `t2fanrd`
 
 A dedicated fan daemon `t2fanrd` is installed and enabled on Fedora by default. 
 
@@ -276,7 +340,7 @@ A dedicated fan daemon `t2fanrd` is installed and enabled on Fedora by default.
     sudo systemctl restart t2fanrd
     ```
 
-#### 2.4.2 `mbpfan`
+#### 2.5.2 `mbpfan`
 
 For situations where the workstation is constantly under heavier load it is possible to use `mbpfan` daemon, which trades the fan silence for more heat under heavier load.
 
@@ -314,13 +378,13 @@ For situations where the workstation is constantly under heavier load it is poss
     sudo systemctl start mbpfan
     ```
 
-### 2.5 Suspend and Closing of the Lid
+### 2.6 Suspend and Closing of the Lid
 
-#### 2.5.1 Suspend
+#### 2.6.1 Suspend
 
 Suspension currently does not work. After booting `Fedora 42.2 Live iso` the suspend does work and the workstation resumes correctly. However after installation the suspend does not work. The workstation will be configured not to suspend, but to lock the session after closing of the lid.
 
-#### 2.5.2 Session Lock
+#### 2.6.2 Session Lock
 
 After closing of the lid the session will be locked.
 
@@ -350,6 +414,8 @@ The power button next to the touchbar can be configured to shutdown the system.
     ```
 
 After opening of the lid, the password can be typed directly without pressing the `ENTER` key to unlock the session.
+
+***
 
 ## 3. 🖥️ Graphics: Configuring Intel iGPU and AMD dGPU
 
@@ -750,3 +816,5 @@ You can revert the system files to the state they were in before the script was 
 ```bash
 sudo gpu-switcher.sh restore
 ```
+
+***
