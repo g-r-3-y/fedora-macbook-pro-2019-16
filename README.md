@@ -283,7 +283,7 @@ It is possible to use the original pre-installed power management daemon **tuned
 2. **After edit of the configuration run:**
 
     ```bash
-    cp -r /usr/lib/tuned/profiles/{balanced,balanced-battery,powersave/ /etc/tuned/profiles/
+    cp -r /usr/lib/tuned/profiles/{balanced,balanced-battery,powersave}/ /etc/tuned/profiles/
     ```
 
 3. **Edit the following profiles:**
@@ -293,10 +293,9 @@ It is possible to use the original pre-installed power management daemon **tuned
     /etc/tuned/profiles/balanced-battery/tuned.conf
     /etc/tuned/profiles/powersave/tuned.conf
     ```
-4. **Add the following line in each profile:**
+4. **Add the following line under `[main]` in each profile:**
 
    ```bash
-   [main]
    include=t2linux-low
    ```
    
