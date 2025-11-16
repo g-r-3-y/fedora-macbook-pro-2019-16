@@ -44,8 +44,8 @@ The following sections detail the required steps to optimize the system:
 * **Installation quirks:** Sanitizing EFI, GRUB configuration.
 * **Power Management:** Optimizing performance vs. power consumption / heat.
 * **Graphics:** Integrated Intel iGPU and dedicated AMD gGPU configuration.
-* **Audio:** Configuring DSP sound card and DSP microphone.
 * **Network:** Securing DNS with Cloudflare WARP.
+* **Audio:** Configuring DSP sound card and DSP microphone.
 * **Display:** Configuring DPI and Night Light.
 * **Password Management:** KeePass, Google Drive Sync and Web browser integration.
 * **Crypto Wallets:** Ledger, Software wallets.
@@ -179,7 +179,7 @@ sudo systemctl enable tlp
 sudo systemctl start tlp
 ```
 
-#### 2.2.3. TLP Configuration `/etc/tlp.conf`
+#### 2.2.3. TLP Configuration
 
 The following settings balance performance vs power consumption and heat:
 
@@ -203,7 +203,7 @@ The following settings balance performance vs power consumption and heat:
 
 The changes are applied immediately by kernel 'intel_pstate' driver.
 
-#### 2.2.4. Processor Information `tlp-stat -p`
+#### 2.2.4. Processor Information
 
 1. **Verify the settings:**
 
@@ -219,7 +219,7 @@ The changes are applied immediately by kernel 'intel_pstate' driver.
     /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost =   1
     ```
 
-#### 2.2.5. Thermal Information `tlp-stat -t`
+#### 2.2.5. Thermal Information 
 
 Displays CPU temperature and fan speeds:
 
