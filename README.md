@@ -819,3 +819,66 @@ sudo gpu-switcher.sh restore
 ```
 
 ***
+
+## 4. 🌐 Network: Securing DNS with **Cloudflare WARP**
+
+Firewall is installed and configured by default on Fedora Workstation. You can check whether it is running:
+
+```bash
+# Check firewall
+firewall-cmd --state
+```
+
+DNS can be secured with `Cloudflare WARP`.
+
+### 4.1 Cloudflare WARP
+
+#### 4.1.1 Installation
+
+1. **Add the Cloudflare repository**
+  
+    ```bash
+    # Add the Cloudflare repository
+    sudo dnf config-manager addrepo --from-repofile=https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo
+    ```  
+
+2. **Install the service**
+   
+    ```bash
+    # Install the service
+    sudo dnf install cloudflare-warp
+    ```
+
+#### 4.1.2 Configuration
+
+After installation, you can use the `warp-cli` tool to register the client and connect to the service.
+
+* Register: ```warp-cli registration new```   
+* Connect: `warp-cli connect`
+* Disable log: `warp-cli dns log disable`
+* Check status: `warp-cli status`
+
+#### 4.1.3 DoH or WARP Configuration
+
+You can choose mode of encryption:
+
+1. **DoH: Encrypted DNS mode**
+
+   ```bash
+   # Cloudflare DoH
+   warp-cli mode doh
+   ```
+
+2. **WARP: Encrypted vpn tunnel mode**
+
+    ```bash
+    # Cloudflare WARP
+    warp-cli mode warp
+   ```
+    
+3. **WARP+DoH: Encrypted vpn tunnel + encryped DNS mode**
+
+    ```bash
+    # Cloudflare WARP+DoH
+    warp-cli mode warp+doh
+   ```
