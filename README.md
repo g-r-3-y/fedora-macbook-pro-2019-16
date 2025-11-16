@@ -59,6 +59,7 @@ The following sections detail the required steps to optimize the system:
 ## 1. 🗑️ Installation Quirks: Sanitizing EFI and GRUB (Via Fedora Live ISO)
 
 If there was previously installed different flavour of Linux (Mint for example), the residual EFI boot entries (e.g., leftover `ubuntu` directories) may conflict with Fedora installation. To ensure a clean boot, we'll use the Fedora Live environment to manage the EFI System Partition (ESP) and the UEFI firmware entries.
+Warning! The following will remove EFI boot records for the previous Linux installation.
 
 ### 1.1. Boot into Fedora Live Environment
 
