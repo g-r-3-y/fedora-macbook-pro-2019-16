@@ -41,18 +41,18 @@ This guide provides instructions and configuration snippets for optimizing **T2 
 
 The following sections detail the required steps to optimize the system:
 
-* **Installation quirks:** Sanitizing EFI, GRUB configuration.
-* **Power Management:** Optimizing performance vs. power consumption / heat.
-* **Graphics:** Integrated Intel iGPU and dedicated AMD gGPU configuration.
-* **Network:** Securing DNS with Cloudflare WARP.
-* **Audio:** Configuring DSP sound card and DSP microphone.
-* **Display:** Configuring DPI and Night Light.
-* **Password Management:** KeePass, Google Drive Sync and Web browser integration.
-* **Crypto Wallets:** Ledger, Software wallets.
-* **IOS Synchronization:** Mail, Calendar, Contacts, Notes, Passwords.
-* **Messengers:** WhatsAPP, Telegram, Signal, Discord.
-* **Video acceleration:** Codecs, Players.
-* **Web browsers:** Firefox flavors, Chromium flavors.
+### 1. **Installation quirks:** Sanitizing EFI, GRUB configuration.
+### 2. **Power Management:** Optimizing performance vs. power consumption / heat.
+### 3. **Graphics:** Integrated Intel iGPU and dedicated AMD gGPU configuration.
+### 4. **Network:** Securing DNS with Cloudflare WARP.
+<!--* **Audio:** Configuring DSP sound card and DSP microphone.-->
+<!--* **Display:** Configuring DPI and Night Light.-->
+<!--* **Password Management:** KeePass, Google Drive Sync and Web browser integration.-->
+<!--* **Crypto Wallets:** Ledger, Software wallets.-->
+<!--* **IOS Synchronization:** Mail, Calendar, Contacts, Notes, Passwords.-->
+<!--* **Messengers:** WhatsAPP, Telegram, Signal, Discord.-->
+<!--* **Video acceleration:** Codecs, Players.-->
+<!--* **Web browsers:** Firefox flavors, Chromium flavors.-->
 
 ---
 
