@@ -817,6 +817,61 @@ You can revert the system files to the state they were in before the script was 
 sudo gpu-switcher.sh restore
 ```
 
+### 3.6. Intel GPU Vulkan driver quirks
+
+When running in hybrid mode or Intel GPU only, some apps might be unstable when accelerated by Intel GPU. The culprit might be Intel drivers. For example Thunderbird, Firefox or Steam crash, when the app window is not maximized. If it is maximized, but any subsequent dialog or frame is not maximized it crashes too. The error produced is usually this:
+
+```bash
+Crash Annotation GraphicsCriticalError: |[0][GFX1-]: (gnome) Wayland protocol error: [destroyed object]: error 7: failed to import supplied dmabufs: EGL failed to allocate resources for the requested operation.
+```
+
+#### 3.6.1. Workarounds
+
+There are several workarounds.
+
+##### 3.6.1.1. Run the app on AMD GPU only
+
+Either switch the whole system from hybrid mode to AMD GPU only or run the specific app on AMD GPU only:
+
+1. In GNOME right click on the app icon and use option:
+
+    **Launch using Discrete Graphics Card**
+
+2. You can also use environment variable:
+
+    ```bash
+    DRI_PRIME=1 <application_command_here>
+    # Example for checking the renderer
+    DRI_PRIME=1 glxinfo | grep "OpenGL renderer"
+    ```
+
+    Example for Thunderbird
+
+    ```bash
+    DRI_PRIME=0 thunderbird
+    # Example for flatpak version
+    flatpak list | grep thunderbird
+    # In our case: Thunderbird	net.thunderbird.Thunderbird		stable	fedora	system
+    DRI_PRIME=0 flatpak net.thunderbird.Thunderbird
+    ```
+
+##### 3.6.1.2. Run the app on Intel GPU only
+
+Turn off HW acceleration in the app: 
+
+**Thunderbird**
+
+1. Go to the menu (`☰`) > `Settings`.
+2. In the `General` tab, scroll down to the `Performance` section.
+3. Uncheck the box that says `Use hardware acceleration when available`.
+
+**Firefox**
+
+1. Go to the menu (`☰`) > Settings.
+2. In the `General` tab, scroll down to the `Performance` section.
+3. Uncheck the box next to `Use recommended performance settings`.
+4. Uncheck the box that says `Use hardware acceleration when available`.
+
 ***
 
 ## 4. 🌐 Network: Securing DNS with **Cloudflare WARP**
