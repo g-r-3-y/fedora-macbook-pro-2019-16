@@ -840,9 +840,9 @@ Either switch the whole system from hybrid mode to AMD GPU only or run the speci
 2. You can also use environment variable:
 
     ```bash
-    DRI_PRIME=1 <application_command_here>
+    DRI_PRIME=0 <application_command_here>
     # Example for checking the renderer
-    DRI_PRIME=1 glxinfo | grep "OpenGL renderer"
+    DRI_PRIME=0 glxinfo | grep "OpenGL renderer"
     ```
 
     Example for Thunderbird
