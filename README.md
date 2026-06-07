@@ -378,11 +378,11 @@ For situations where the workstation is constantly under heavier load it is poss
     sudo systemctl start mbpfan
     ```
 
-### 2.6 Suspend and Closing of the Lid
+### 2.6 Suspend
 
 #### 2.6.1 Suspend
 
-Suspension currently does not work. After booting `Fedora 42.2 Live iso` the suspend does work and the workstation resumes correctly. However after installation the suspend does not work. The workstation will be configured not to suspend, but to lock the session after closing of the lid.
+As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off).
 
 #### 2.6.2 Session Lock
 
@@ -414,6 +414,15 @@ The power button next to the touchbar can be configured to shutdown the system.
     ```
 
 After opening of the lid, the password can be typed directly without pressing the `ENTER` key to unlock the session.
+
+#### 2.6.3 Suspend Kernel Tweaks
+
+For faster resumption we add few kernel parameters.
+
+```bash
+# Add ACPI kernel parameters
+sudo grubby --update-kernel=ALL --args='acpi_osi=!Darwin acpi_osi=Linux'
+```
 
 ***
 
