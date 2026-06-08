@@ -382,7 +382,7 @@ For situations where the workstation is constantly under heavier load it is poss
 
 #### 2.6.1 Suspend
 
-As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. "Deep" suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
+As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. Resume can be called by opening of the lid or single press of **Power / Touch Id** button. **Deep** suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
 
 #### 2.6.2 Session Lock
 
