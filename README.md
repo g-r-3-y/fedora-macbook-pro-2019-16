@@ -382,7 +382,7 @@ For situations where the workstation is constantly under heavier load it is poss
 
 #### 2.6.1 Suspend
 
-As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off).
+As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. "Deep" suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
 
 #### 2.6.2 Session Lock
 
@@ -417,14 +417,106 @@ After opening of the lid, the password can be typed directly without pressing th
 
 #### 2.6.3 Suspend Kernel Tweaks
 
-For faster resumption we add few kernel parameters.
+For suspend and resume to work correctly, the kernel needs additional arguments:
 
 ```bash
-# Add ACPI kernel parameters
-sudo grubby --update-kernel=ALL --args='acpi_osi=!Darwin acpi_osi=Linux'
+# Add kernel args
+sudo grubby --update-kernel=ALL --args='mem_sleep_default=deep intel_iommu=on iommu=pt pm_async=off'
 ```
 
+After the reboot of the system, verify the kernel arguments:
+
+```bash
+# Verify kernel args
+cat /proc/cmdline 
+```
+
+#### 2.6.4 Suspend Sleep Tweaks
+
+We have a choice to use light `s2idle` sleep or a `deep` sleep. We will configure the system for a `deep` sleep:
+
+**Edit `/etc/systemd/sleep.conf`:**
+
+```bash
+[Sleep]
+   AllowSuspend=yes
+   AllowHibernation=no
+   AllowSuspendThenHibernate=no
+#   SuspendState=freeze
+#   MemorySleepMode=s2idle
+   SuspendMode=deep
+   SuspendState=mem
+#   HibernateDelaySec=30min
+```
+
+#### 2.6.5 Suspend and Resume T2 fixes
+
+We need to sanitize T2 system for suspend and resume operations:
+
+1. **Edit `/etc/systemd/system/suspend-fix-t2.service`:**
+
+    ```bash
+    [Unit]
+    Description=Prepare T2 MacBook Modules for Suspend
+    Before=sleep.target
+
+    [Service]
+    Type=oneshot
+    ExecStart=-/usr/bin/warp-cli disconnect
+    ExecStart=-/usr/bin/systemctl stop tiny-dfr
+    ExecStart=-/usr/bin/rmmod -f hid_appletb_kbd
+    ExecStart=-/usr/bin/rmmod -f hid_appletb_bl
+    ExecStart=-/usr/bin/rmmod -f appletbdrm
+    ExecStart=-/usr/sbin/modprobe -r xhci_pci
+    ExecStart=-/usr/bin/rmmod -f apple_bce
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=sleep.target
+    ```
+
+2. **Edit `/etc/systemd/system/resume-fix-t2.service`:**
+    ```bash
+    [Unit]
+    Description=Safely Reinitialize T2 Modules on Wake
+    After=suspend.target
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/bin/sleep 8 
+
+    # Force the kernel to aggressively re-probe the vanished controller lanes
+    ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:09:00.0/rescan'
+    ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:7f:00.0/rescan'
+
+    ExecStart=-/usr/bin/modprobe xhci_pci
+    ExecStart=/usr/bin/sleep 8
+    ExecStart=/usr/bin/modprobe apple_bce
+    ExecStart=/usr/bin/sleep 2
+    ExecStart=/usr/bin/modprobe appletbdrm
+    ExecStart=/usr/bin/modprobe hid_appletb_bl
+    ExecStart=/usr/bin/modprobe hid_appletb_kbd
+    ExecStart=/usr/bin/sleep 2
+    ExecStart=/usr/bin/systemctl --no-block start tiny-dfr
+
+    # KBD backlight fix
+    ExecStart=/usr/bin/sh -c 'sleep 5 && echo 1000 > /sys/class/leds/:white:kbd_backlight/brightness'
+    ExecStart=-/usr/bin/warp-cli connect
+
+    [Install]
+    WantedBy=suspend.target
+    ```
+
+3. **Reload `systemd configuration files`:**
+
+    ```bash
+    # Reload systemd config
+    sudo sync
+    sudo systemctl daemon-reload
+    ```
+    
 ***
+
 
 ## 3. 🖥️ Graphics: Configuring Intel iGPU and AMD dGPU
 
@@ -770,7 +862,7 @@ Save the provided script content (named `gpu-switcher.sh`) into an executable fi
 
 #### 3.2.2. Run in Hybrid Mode (Default Recommendation)
 
-This command applies the necessary configuration to make both GPUs available, but forces the AMD dGPU to its lowest performance level for better battery life and thermal management. Intel iGPU is used by Wayland apps by default (GNOME, web browsers, etc). Video playback is accelerated by AMD dGPU, if correct ffmpeg codecs are installed (by vlc, mpv, etc).
+This command applies the necessary configuration to make both GPUs available, but forces the AMD dGPU to its lowest performance level for better battery life and thermal management. Because of this in "Hybrid" mode the system is cooler and more quiet than in "Intel Only" mode. Intel iGPU is used by Wayland apps by default (GNOME, web browsers, etc). Video playback is accelerated by AMD dGPU, if correct ffmpeg codecs are installed (by vlc, mpv, etc).
 
 ```bash
 sudo gpu-switcher.sh hybrid amd-dpm-low
