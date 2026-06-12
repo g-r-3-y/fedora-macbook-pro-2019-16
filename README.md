@@ -342,7 +342,7 @@ A dedicated fan daemon `t2fanrd` is installed and enabled on Fedora by default.
 
 #### 2.5.2 `mbpfan`
 
-It is also possible to use `mbpfan` daemon, which trades the fan silence for more heat under heavier load. Disclaimer - replacing `t2fanrd` with `mbpfan` is a matter of a personal preference, when the machine is configured for raw performance over power efficiency (e.g., for high-res video rendering), mbpfan could have more adequate cooling profile. 
+It is also possible to use `mbpfan` daemon, which trades the fan silence for more heat under heavier load. Replacing `t2fanrd` with `mbpfan` is a matter of a personal preference, when the machine is configured for raw performance over power efficiency (e.g., for high-res video rendering), mbpfan could have more adequate cooling profile. 
 
 1. **Stop and disable `t2fanrd`:**
 
@@ -382,7 +382,7 @@ It is also possible to use `mbpfan` daemon, which trades the fan silence for mor
 
 #### 2.6.1 Suspend
 
-As of kernel 7.0.x suspension and resumption work. The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. Resume can be called by opening of the lid or single press of **Power / Touch Id** button. **Deep** suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
+The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. Resume can be called by opening of the lid or single press of **Power / Touch Id** button. **Deep** suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
 
 #### 2.6.2 Session Lock
 
