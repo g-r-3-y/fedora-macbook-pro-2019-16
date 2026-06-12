@@ -342,7 +342,7 @@ A dedicated fan daemon `t2fanrd` is installed and enabled on Fedora by default.
 
 #### 2.5.2 `mbpfan`
 
-For situations where the workstation is constantly under heavier load it is possible to use `mbpfan` daemon, which trades the fan silence for more heat under heavier load.
+It is also possible to use `mbpfan` daemon, which trades the fan silence for more heat under heavier load. Disclaimer - replacing `t2fanrd` with `mbpfan` is a matter of a personal preference, when the machine is configured for raw performance over power efficiency (e.g., for high-res video rendering), mbpfan could have more adequate cooling profile. 
 
 1. **Stop and disable `t2fanrd`:**
 
@@ -421,7 +421,7 @@ For suspend and resume to work correctly, the kernel needs additional arguments:
 
 ```bash
 # Add kernel args
-sudo grubby --update-kernel=ALL --args='mem_sleep_default=deep intel_iommu=on iommu=pt pm_async=off'
+sudo grubby --update-kernel=ALL --args='mem_sleep_default=deep intel_iommu=on iommu=pt pm_async=off pcie_ports=compat'
 ```
 
 After the reboot of the system, verify the kernel arguments:
@@ -430,6 +430,15 @@ After the reboot of the system, verify the kernel arguments:
 # Verify kernel args
 cat /proc/cmdline 
 ```
+
+Kernel arguments `'i915.enable_guc=2'` and `'acpi_osi=!Darwin acpi_osi=Linux'` do not work with the current configuration and should be removed if present:
+
+```bash
+# Remove kernel args
+grubby --update-kernel=ALL --remove-args='i915.enable_guc=2 acpi_osi=!Darwin acpi_osi=Linux'
+```
+
+Note: Sometimes recommended GuC mode "3" `'i915.enable_guc=3'` is not applicapble for this hardware (intel Coffee Lake), only mode "2".
 
 #### 2.6.4 Suspend Sleep Tweaks
 
@@ -483,24 +492,25 @@ We need to sanitize T2 system for suspend and resume operations:
 
     [Service]
     Type=oneshot
-    ExecStart=/usr/bin/sleep 8 
-
+    ExecStart=/usr/bin/sleep 4 
     # Force the kernel to aggressively re-probe the vanished controller lanes
     ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:09:00.0/rescan'
     ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:7f:00.0/rescan'
-
     ExecStart=-/usr/bin/modprobe xhci_pci
-    ExecStart=/usr/bin/sleep 8
+    ExecStart=/usr/bin/sleep 4
     ExecStart=/usr/bin/modprobe apple_bce
-    ExecStart=/usr/bin/sleep 2
+    ExecStart=/usr/bin/sleep 1
     ExecStart=/usr/bin/modprobe appletbdrm
     ExecStart=/usr/bin/modprobe hid_appletb_bl
     ExecStart=/usr/bin/modprobe hid_appletb_kbd
-    ExecStart=/usr/bin/sleep 2
+    ExecStart=-/usr/bin/sh -c 'echo 0 > /sys/bus/usb/devices/7-6/bConfigurationValue'
+    ExecStart=-/usr/bin/sleep 1
+    ExecStart=-/usr/bin/sh -c 'echo 2 > /sys/bus/usb/devices/7-6/bConfigurationValue'
+    ExecStart=-/usr/bin/udevadm settle
     ExecStart=/usr/bin/systemctl --no-block start tiny-dfr
 
     # KBD backlight fix
-    ExecStart=/usr/bin/sh -c 'sleep 5 && echo 1000 > /sys/class/leds/:white:kbd_backlight/brightness'
+    ExecStart=/usr/bin/sh -c 'sleep 3 && echo 1000 > /sys/class/leds/:white:kbd_backlight/brightness'
     ExecStart=-/usr/bin/warp-cli connect
 
     [Install]
