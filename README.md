@@ -492,25 +492,25 @@ We need to sanitize T2 system for suspend and resume operations:
 
     [Service]
     Type=oneshot
-    ExecStart=/usr/bin/sleep 4 
+    ExecStart=/usr/bin/sleep 8 
     # Force the kernel to aggressively re-probe the vanished controller lanes
     ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:09:00.0/rescan'
     ExecStart=/usr/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:7f:00.0/rescan'
     ExecStart=-/usr/bin/modprobe xhci_pci
-    ExecStart=/usr/bin/sleep 4
+    ExecStart=/usr/bin/sleep 6
     ExecStart=/usr/bin/modprobe apple_bce
-    ExecStart=/usr/bin/sleep 1
+    ExecStart=/usr/bin/sleep 2
     ExecStart=/usr/bin/modprobe appletbdrm
     ExecStart=/usr/bin/modprobe hid_appletb_bl
     ExecStart=/usr/bin/modprobe hid_appletb_kbd
     ExecStart=-/usr/bin/sh -c 'echo 0 > /sys/bus/usb/devices/7-6/bConfigurationValue'
-    ExecStart=-/usr/bin/sleep 1
+    ExecStart=-/usr/bin/sleep 2
     ExecStart=-/usr/bin/sh -c 'echo 2 > /sys/bus/usb/devices/7-6/bConfigurationValue'
     ExecStart=-/usr/bin/udevadm settle
     ExecStart=/usr/bin/systemctl --no-block start tiny-dfr
 
     # KBD backlight fix
-    ExecStart=/usr/bin/sh -c 'sleep 3 && echo 1000 > /sys/class/leds/:white:kbd_backlight/brightness'
+    ExecStart=/usr/bin/sh -c 'sleep 5 && echo 1000 > /sys/class/leds/:white:kbd_backlight/brightness'
     ExecStart=-/usr/bin/warp-cli connect
 
     [Install]
