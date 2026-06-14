@@ -537,7 +537,7 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 
 1. **Install the driver:**
 
-Follow the section `#Build and deploy` here:
+Follow the section `Build and deploy` here:
 
 [https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)
 
