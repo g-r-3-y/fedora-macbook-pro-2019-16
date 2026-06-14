@@ -537,29 +537,29 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 
 1. **Install the driver:**
 
-Follow the section `Build and deploy` here:
+    Follow the section `Build and deploy` here:
 
-[https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)
+    [https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)
 
-The installation guide assumes that environment to compile kernel modules is present. If that is not the case, install it:
+    The installation guide assumes that environment to compile kernel modules is present. If that is not the case, install it:
 
     ```bash
     # Install kernel development toolchain
     sudo dnf install git make gcc kernel-devel kernel-headers dkms   
     ```
 
-You also have to install current kernel-t2-devel:
+    Also install current kernel-t2-devel:
 
     ```bash
     # Install current kernel T2 headers
     sudo dnf install "kernel-devel-$(uname -r)"
     ```
 
-After that you can return to the `apple-bce` kernel module source, compile it and install it.
+    After that you can return to the `apple-bce` kernel module source, compile it and install it.
 
 2. **Sanitize the kernel parameters:**
 
-Prepare kernel arguments, that work well with new `apple-bce` module and suspend /resume:
+    Prepare kernel arguments, that work well with new `apple-bce` module and suspend /resume:
 
     ```bash
     # Remove kernel args
@@ -568,13 +568,13 @@ Prepare kernel arguments, that work well with new `apple-bce` module and suspend
     sudo grubby --update-kernel=ALL --args='mem_sleep_default=deep i915.enable_guc=2 acpi_osi=!Darwin acpi_osi=Linux'
     ```
 
-After the reboot of the system, verify the kernel arguments:
+    After the reboot of the system, verify the kernel arguments:
 
     ```bash
     # Verify kernel args
     cat /proc/cmdline 
     ```
-If there are duplicate arguments, remove the duplicities by `grubby`.
+    If there are duplicate arguments, remove the duplicities by `grubby`.
 
 3. **Remove old suspend and resume scripts:**
    
@@ -643,7 +643,7 @@ If there are duplicate arguments, remove the duplicities by `grubby`.
     sudo systemctl daemon-reload
     ```
 
-Note: If occasionally the touchbar does not resume correctly, you can manually resume it:
+    If occasionally the touchbar does not resume correctly, you can manually resume it:
 
     ```bash
     # Resume touchbar
