@@ -4,7 +4,7 @@ This guide provides instructions and configuration snippets for optimizing **T2 
 
 | Detail | Specification |
 | :--- | :--- |
-| **Target Fedora Version** | Fedora 43 (Workstation Edition) |
+| **Target Fedora Version** | Fedora 44 (Workstation Edition) |
 | **Author** | [g-r-3-y] |
 | **License** | MIT License |
 
@@ -29,11 +29,11 @@ This guide provides instructions and configuration snippets for optimizing **T2 
 | Component | Detail |
 | :--- | :--- |
 | **Firmware** | 2094.40.1.0.0 (iBridge: 23.16.11072.0.0,0) |
-| **Primary OS** | Fedora Linux 43 (Workstation Edition) |
-| **Dual Boot** | MacOS Tahoe 26.1 / Windows 11 24H2 |
-| **Desktop** | GNOME 49 |
+| **Primary OS** | Fedora Linux 44 (Workstation Edition) |
+| **Dual Boot** | MacOS Sequoia 15.7.7 / Windows 11 24H2 |
+| **Desktop** | GNOME 50.2 |
 | **Compositor** | Wayland |
-| **Kernel** | Linux 6.16.9-210.t2.fc43.x86_64 |
+| **Kernel** | Linux 7.0.10-201.t2.fc44.x86_64 |
 
 ---
 
