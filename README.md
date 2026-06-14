@@ -530,8 +530,6 @@ We need to sanitize T2 system for suspend and resume operations:
     sudo sync
     sudo systemctl daemon-reload
     ```
-    
-***
 
 ### 2.7 Suspend with modified `apple-bce` driver
 
