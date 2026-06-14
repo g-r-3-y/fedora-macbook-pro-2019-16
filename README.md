@@ -380,6 +380,8 @@ It is also possible to use `mbpfan` daemon, which trades the fan silence for mor
 
 ### 2.6 Suspend
 
+T2 kernel `apple-bce` driver was not working well with suspend and deep sleep resumption. The first part of this section configures the system to work around it. Second part discusses installation od modified `apple-bce` driver, which supports suspend well . So there is a choice not to modify the driver and also a choice to replace the driver and configure the system accordingly. As everything changes, in the future it is possible that the default T2 `apple-bce` driver will work well with suspend as well. In that case the parts discussing kernel parameters and touchbar sanitization can still be used.
+
 #### 2.6.1 Suspend
 
 The workstation will be configured not to auto suspend, but to lock the session after closing of the lid. Suspend can be called manually from GNOME **Power Off** options (Suspend, Restart, Power Off) or from the command line via `systemctl suspend`. Resume can be called by opening of the lid or single press of **Power / Touch Id** button. **Deep** suspend and resume work in all graphic configurations - **Hybrid** or **Intel Only** and **AMD Only** modes.
@@ -435,7 +437,7 @@ Kernel arguments `'i915.enable_guc=2'` and `'acpi_osi=!Darwin acpi_osi=Linux'` d
 
 ```bash
 # Remove kernel args
-grubby --update-kernel=ALL --remove-args='i915.enable_guc=2 acpi_osi=!Darwin acpi_osi=Linux'
+sudo grubby --update-kernel=ALL --remove-args='i915.enable_guc=2 acpi_osi=!Darwin acpi_osi=Linux'
 ```
 
 Note: Sometimes recommended GuC mode "3" `'i915.enable_guc=3'` is not applicapble for this hardware (intel Coffee Lake), only mode "2".
@@ -517,9 +519,13 @@ We need to sanitize T2 system for suspend and resume operations:
     WantedBy=suspend.target
     ```
 
-3. **Reload `systemd configuration files`:**
+3. **Enable and reload `systemd configuration files`:**
 
     ```bash
+    # Enable scripts
+    cd /etc/systemd/system
+    sudo systemctl enable suspend-fix-t2.service
+    sudo systemctl enable resume-fix-t2.service
     # Reload systemd config
     sudo sync
     sudo systemctl daemon-reload
@@ -527,6 +533,146 @@ We need to sanitize T2 system for suspend and resume operations:
     
 ***
 
+### 2.7 Suspend with modified `apple-bce` driver
+
+It is possible to replace the default T2 `apple-bce` driver by a forked one for a faster suspend, resume cycle. 
+
+1. **Install the driver:**
+
+Follow the section `Build and deploy` here:
+
+    `[https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)`
+
+Note: The installation assumes that environment to compile kernel modules is present. If that is not the case, install it:
+
+    ```bash
+    # Install kernel development toolchain
+    sudo dnf install git make gcc kernel-devel kernel-headers dkms   
+    ```
+
+You also have to install current kernel-t2-devel:
+
+    ```bash
+    # Install current kernel T2 headers
+    sudo dnf install "kernel-devel-$(uname -r)"
+    ```
+
+After that you can return to the `apple-bce` kernel module source, compile it and install it.
+
+2. **Sanitize the kernel parameters:**
+
+Prepare kernel arguments, that work well with new `apple-bce` module and suspend /resume:
+
+    ```bash
+    # Remove kernel args
+    sudo grubby --update-kernel=ALL --remove-args='pcie_aspm=off intel_iommu=on iommu=pt pm_async=off pcie_ports=compat'
+    # Add kernel args
+    sudo grubby --update-kernel=ALL --args='mem_sleep_default=deep i915.enable_guc=2 acpi_osi=!Darwin acpi_osi=Linux'
+    ```
+
+After the reboot of the system, verify the kernel arguments:
+
+    ```bash
+    # Verify kernel args
+    cat /proc/cmdline 
+    ```
+If there are duplicate arguments, remove the duplicities by `grubby`.
+
+3. **Remove old suspend and resume scripts:**
+   
+    ```bash
+    # Remove suspend / resume scripts:
+    cd /etc/systemd/system
+    sudo systemctl disable suspend-fix-t2.service
+    sudo systemctl disable resume-fix-t2.service
+    sudo rm suspend-fix-t2.service
+    sudo rm resume-fix-t2.service
+    ```
+    
+4. **Edit `/etc/systemd/system/touchbar-suspend-fix.service`:**
+
+    ```bash
+    [Unit]
+    Description=Unload and Reload Modules for Suspend and Resume
+    Before=sleep.target
+    StopWhenUnneeded=yes
+
+    [Service]
+    User=root
+    Type=oneshot
+    RemainAfterExit=yes
+
+    # --- SLEEP PATH ---
+
+    # 1. Turn off keyboard backlight to save state
+    ExecStart=-/usr/bin/sh -c "/usr/bin/echo 0 > /sys/class/leds/:white:kbd_backlight/brightness"
+
+    # 2. Stop the dynamic function row daemon completely
+    ExecStart=-/usr/bin/systemctl stop tiny-dfr.service
+
+    # 3. Unload both the keyboard and backlight drivers to free the interfaces
+    ExecStart=-/usr/bin/modprobe -r hid_appletb_kbd hid_appletb_bl
+
+    # --- WAKE PATH ---
+
+    # 1. Give the virtual USB bus half a second to settle its topology
+    ExecStop=-/usr/bin/sleep 1 
+
+    # 2. Dynamically reset the configuration on whatever port the Touch Bar landed on
+    ExecStop=-/usr/bin/sh -c 'for dev in /sys/bus/usb/devices/*-*; do if [ -f "$dev/idProduct" ] && [ "$(cat $dev/idProduct)" = "8302" ]; then echo 0 > "$dev/bConfigurationValue"; echo 2 > "$dev/bConfigurationValue"; fi; done'
+
+    # 3. Reload the drivers cleanly
+    ExecStop=-/usr/bin/modprobe hid_appletb_kbd hid_appletb_bl
+
+    # 4. Let udev catch up, restart the interface daemon, and restore brightness
+    ExecStop=-/usr/bin/udevadm settle
+    ExecStop=-/usr/bin/systemctl restart tiny-dfr.service
+    ExecStop=-/usr/bin/warp-cli connect
+    ExecStopPost=-/usr/bin/sh -c "/usr/bin/echo 200 > /sys/class/leds/:white:kbd_backlight/brightness"
+
+    [Install]
+    WantedBy=sleep.target
+    ```
+
+5. **Enable `touchbar-suspend-fix.service`:**
+
+    ```bash
+    # Enable touchbar script
+    cd /etc/systemd/system
+    sudo systemctl touchbar-suspend-fix.service
+    # Reload systemd config
+    sudo sync
+    sudo systemctl daemon-reload
+    ```
+
+Note: If occasionally the touchbar does not resume correctly, you can manually resume it:
+
+    ```bash
+    # Resume touchbar
+    sudo /usr/bin/sh -c 'for dev in /sys/bus/usb/devices/*-*; do if [ -f "$dev/idProduct" ] && [ "$(cat $dev/idProduct)" = "8302" ]; then echo 0 > "$dev/bConfigurationValue"; echo 2 > "$dev/bConfigurationValue"; fi; done'
+    ```
+
+### 2.8 Suspend by closing of the lid
+
+If the suspend / resume cycle is stable and satisfactory, the suspend can be also invoked by closing of the lid: 
+
+1. **Edit `/etc/systemd/logind.conf.d/logind.conf`:**
+
+    ```bash
+    #Session Lock settings
+    HandleLidSwitch=suspend
+    HandleLidSwitchExternalPower=suspend
+    HandleLidSwitchDocked=lock
+    ```
+
+2. **Restart `systemd-logind`:**
+
+    ```bash
+    # Restart systemd-logind service
+    sudo systemctl restart systemd-logind
+    ```
+
+***
 
 ## 3. 🖥️ Graphics: Configuring Intel iGPU and AMD dGPU
 
