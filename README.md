@@ -539,7 +539,7 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 
 Follow the section `Build and deploy` here:
 
-    `[https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)`
+    [https://github.com/deqrocks/apple-bce](https://github.com/deqrocks/apple-bce#build-and-deploy)
 
 Note: The installation assumes that environment to compile kernel modules is present. If that is not the case, install it:
 
