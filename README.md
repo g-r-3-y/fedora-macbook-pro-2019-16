@@ -1191,3 +1191,36 @@ You can choose mode of encryption:
     # Cloudflare WARP+DoH
     warp-cli mode warp+doh
    ```
+
+#### 4.1.4 Sanitizing log verbosity
+
+By default `warp-svc` service sends a lot of messages into system log. To reduce the verbosity:
+
+1. **Edit `/etc/systemd/system/warp-svc.service**
+
+    Add the following text into the `[Service]` section:
+   
+    ```bash
+    LogLevelMax=warning
+    ```  
+
+2. **Restart the service**
+   
+    ```bash
+    # Restart warp service
+    sudo systemctl daemon-reload
+    sudo systemctl restart warp-svc
+    ```
+3. **Flush the system logs (Optional)**
+
+    ```bash
+    # Flush system logs
+    sudo journalctl --vacuum-size=50M
+    ```
+    
+4. **Verify the limited log verbosity**
+
+    ```bash
+    # Log verbosity check
+    sudo journalctl -u warp-svc -f
+    ```
