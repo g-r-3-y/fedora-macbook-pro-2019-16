@@ -1127,6 +1127,12 @@ Turn off HW acceleration in the app:
 3. Uncheck the box next to `Use recommended performance settings`.
 4. Uncheck the box that says `Use hardware acceleration when available`.
 
+### 3.7. Using Intel iGPU as primary GPU in **Mutter**
+
+Mutter-based desktop environments (e.g. GNOME) pick one GPU to use as the "primary GPU", and it's not necessarily the same as the one connected to the display. Even if apple-gmux is configured with force_igd=y, Mutter's primary GPU might be the AMD dGPU, which makes the AMD dGPU active when screen contents change. That would likely prevent deep suspend and resume.
+
+See Mutter [Multi-GPU documentation](https://gitlab.gnome.org/GNOME/mutter/-/blob/main/doc/multi-gpu.md) for more info, including how to change the primary GPU.
+
 ***
 
 ## 4. 🌐 Network: Securing DNS with **Cloudflare WARP**
