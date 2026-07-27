@@ -1163,6 +1163,46 @@ Mutter-based desktop environments (e.g. GNOME) pick one GPU to use as the "prima
 
 See Mutter [Multi-GPU documentation](https://gitlab.gnome.org/GNOME/mutter/-/blob/main/doc/multi-gpu.md) for more info, including how to change the primary GPU.
 
+### 3.9 Hardware video decoding
+
+Install the drivers:
+
+```bash
+# Add RPM Fusion Free and Nonfree repositories
+sudo dnf install \
+"https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
+"https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+```
+
+```bash
+# Refresh package metadata and install the diagnostic utility
+sudo dnf makecache --refresh
+sudo dnf install libva-utils
+```
+
+```bash
+# Install AMD dGPU Freeworld Mesa VA-API driver
+sudo dnf install mesa-va-drivers-freeworld
+
+# Replace Fedora's restricted iHD driver with the full Intel media driver
+sudo dnf swap libva-intel-media-driver intel-media-driver
+```
+
+```bash
+# Install AMD dGPU Freeworld Mesa VA-API driver
+sudo dnf install mesa-va-drivers-freeworld
+```
+
+```bash
+# Install VLC media player verion with drivers included - option 2 flathub system
+flatpak install org.videolan.VLC
+```
+
+```bash
+# Install Kodi media player verion with drivers included
+flatpak install tv.kodi.Kodi
+```
+
 ***
 
 ## 4. 🌐 Network: Securing DNS with **Cloudflare WARP**
