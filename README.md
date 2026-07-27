@@ -670,6 +670,10 @@ If the suspend / resume cycle is stable and satisfactory, the suspend can be als
     sudo systemctl restart systemd-logind
     ```
 
+### 2.9 GPU configurations necessary for the deep suspend
+
+The GPUs on the machine have to configured in a particular way, the following section 3 describes, how to configure them. In short - both GPUs have to be active and managed in hybrid mode, while Mutter / GNOME is using Intel iGPU. 
+
 ***
 
 ## 3. 🖥️ Graphics: Configuring Intel iGPU and AMD dGPU
@@ -1127,7 +1131,33 @@ Turn off HW acceleration in the app:
 3. Uncheck the box next to `Use recommended performance settings`.
 4. Uncheck the box that says `Use hardware acceleration when available`.
 
-### 3.7. Using Intel iGPU as primary GPU in **Mutter**
+### 3.7. Configuring GPUs for deep suspend
+
+Both GPUs have to be active in **hybrid** mode:
+
+```bash
+# Switch GPUs to hybrid mode
+sudo gpu-switcher.sh hybrid
+
+# Set AMD dGPU to low power mode
+sudo gpu-switcher.sh amd-dpm-low
+```
+
+After reboot verify GPU status for deep sleep:
+
+```bash
+# Check GPU configuration
+sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+```
+IGD is the Intel iGPU and DIS is the AMD dGPU. The position of the + shows the GPU currently in use as the display adapter, while Pwr and Off refer to their respective power status. Both should present and powered on, with IGD as primary:
+
+```bash
+0:DIS-Audio: :DynOff:0000:03:00.1
+1:DIS: :Pwr:0000:03:00.0
+2:IGD:+:Pwr:0000:00:02.0
+```
+
+### 3.8. Using Intel iGPU as primary GPU in **Mutter**
 
 Mutter-based desktop environments (e.g. GNOME) pick one GPU to use as the "primary GPU", and it's not necessarily the same as the one connected to the display. Even if apple-gmux is configured with force_igd=y, Mutter's primary GPU might be the AMD dGPU, which makes the AMD dGPU active when screen contents change. That would likely prevent deep suspend and resume.
 
