@@ -637,7 +637,7 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
     ```bash
     # Enable touchbar script
     cd /etc/systemd/system
-    sudo systemctl touchbar-suspend-fix.service
+    sudo systemctl enable touchbar-suspend-fix.service
     # Reload systemd config
     sudo sync
     sudo systemctl daemon-reload
