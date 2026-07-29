@@ -1181,9 +1181,6 @@ sudo dnf install libva-utils
 ```
 
 ```bash
-# Install AMD dGPU Freeworld Mesa VA-API driver
-sudo dnf install mesa-va-drivers-freeworld
-
 # Replace Fedora's restricted iHD driver with the full Intel media driver
 sudo dnf swap libva-intel-media-driver intel-media-driver
 ```
