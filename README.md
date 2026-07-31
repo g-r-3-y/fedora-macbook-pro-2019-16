@@ -590,7 +590,7 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 4. **Edit `/etc/systemd/system/touchbar-suspend-fix.service`:**
 
     ```bash
-     [Unit]
+    [Unit]
     Description=Unload and Reload Modules for Suspend and Resume
     Before=sleep.target
     StopWhenUnneeded=yes
