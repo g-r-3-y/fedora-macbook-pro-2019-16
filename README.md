@@ -590,7 +590,7 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 4. **Edit `/etc/systemd/system/touchbar-suspend-fix.service`:**
 
     ```bash
-    [Unit]
+     [Unit]
     Description=Unload and Reload Modules for Suspend and Resume
     Before=sleep.target
     StopWhenUnneeded=yes
@@ -602,30 +602,31 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
 
     # --- SLEEP PATH ---
 
-    # 1. Turn off keyboard backlight to save state
+    ExecStart=-/usr/bin/warp-cli disconnect
+
     ExecStart=-/usr/bin/sh -c "/usr/bin/echo 0 > /sys/class/leds/:white:kbd_backlight/brightness"
 
-    # 2. Stop the dynamic function row daemon completely
     ExecStart=-/usr/bin/systemctl stop tiny-dfr.service
 
-    # 3. Unload both the keyboard and backlight drivers to free the interfaces
     ExecStart=-/usr/bin/modprobe -r hid_appletb_kbd hid_appletb_bl
+
+    ExecStart=-/usr/bin/modprobe -r apple_bce
+
 
     # --- WAKE PATH ---
 
-    # 1. Give the virtual USB bus half a second to settle its topology
-    ExecStop=-/usr/bin/sleep 1 
+    ExecStop=-/usr/bin/modprobe apple_bce
 
-    # 2. Dynamically reset the configuration on whatever port the Touch Bar landed on
-    ExecStop=-/usr/bin/sh -c 'for dev in /sys/bus/usb/devices/*-*; do if [ -f "$dev/idProduct" ] && [ "$(cat $dev/idProduct)" = "8302" ]; then echo 0 > "$dev/bConfigurationValue"; echo 2 > "$dev/bConfigurationValue"; fi; done'
+    ExecStop=-/usr/bin/sleep 1
 
-    # 3. Reload the drivers cleanly
     ExecStop=-/usr/bin/modprobe hid_appletb_kbd hid_appletb_bl
 
-    # 4. Let udev catch up, restart the interface daemon, and restore brightness
+    ExecStop=-/usr/bin/sh -c 'for dev in /sys/bus/usb/devices/*-*; do if [ -f "$dev/idProduct" ] && [ "$(cat $dev/idProduct)" = "8302" ]; then echo 0 > "$dev/bConfigurationValue"; echo 2 > "$dev/bConfigurationValue"; fi; done'
+
     ExecStop=-/usr/bin/udevadm settle
+
     ExecStop=-/usr/bin/systemctl restart tiny-dfr.service
-    ExecStop=-/usr/bin/warp-cli connect
+
     ExecStopPost=-/usr/bin/sh -c "/usr/bin/echo 200 > /sys/class/leds/:white:kbd_backlight/brightness"
 
     [Install]
