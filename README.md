@@ -600,32 +600,23 @@ It is possible to replace the default T2 `apple-bce` driver by a forked one for 
     Type=oneshot
     RemainAfterExit=yes
 
-    # --- SLEEP PATH ---
-
-    ExecStart=-/usr/bin/warp-cli disconnect
-
-    ExecStart=-/usr/bin/sh -c "/usr/bin/echo 0 > /sys/class/leds/:white:kbd_backlight/brightness"
-
+    #ExecStart=-/usr/bin/sh -c "/usr/bin/echo 0 | /usr/bin/tee /sys/class/leds/:white:kbd_backlight/brightness" # this is for magic keyboards 
     ExecStart=-/usr/bin/systemctl stop tiny-dfr.service
+    ExecStart=-/usr/bin/modprobe -r hid_appletb_kbd
 
-    ExecStart=-/usr/bin/modprobe -r hid_appletb_kbd hid_appletb_bl
+    ExecStop=/usr/bin/sleep 6
+    ExecStop=-/usr/bin/modprobe hid_appletb_kbd
 
-    # --- WAKE PATH ---
-
-    ExecStop=-/usr/bin/rmmod -f apple_bce
-    ExecStop=-/usr/bin/modprobe apple_bce
-
+    ExecStop=-/usr/bin/sh -c 'echo 0 > /sys/bus/usb/devices/3-6/bConfigurationValue'
     ExecStop=-/usr/bin/sleep 1
-
-    ExecStop=-/usr/bin/modprobe hid_appletb_kbd hid_appletb_bl
-
-    ExecStop=-/usr/bin/sh -c 'for dev in /sys/bus/usb/devices/*-*; do if [ -f "$dev/idProduct" ] && [ "$(cat $dev/idProduct)" = "8302" ]; then echo 0 > "$dev/bConfigurationValue"; echo 2 >         "$dev/bConfigurationValue"; fi; done'
-
+    ExecStop=-/usr/bin/sh -c 'echo 2 > /sys/bus/usb/devices/3-6/bConfigurationValue'
     ExecStop=-/usr/bin/udevadm settle
 
     ExecStop=-/usr/bin/systemctl restart tiny-dfr.service
 
-    ExecStopPost=-/usr/bin/sh -c "/usr/bin/echo 500 > /sys/class/leds/:white:kbd_backlight/brightness"
+    #ExecStop=-/usr/bin/sleep 3
+
+    ExecStop=/usr/bin/sh -c 'echo 300 > /sys/class/leds/:white:kbd_backlight/brightness'
 
     [Install]
     WantedBy=sleep.target
